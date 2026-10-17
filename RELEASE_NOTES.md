@@ -1,4 +1,4 @@
-Clavia 1.2.1 reúne formación musical, práctica visual e importación local de partituras en una app de escritorio.
+Clavia 1.2.2 reúne formación musical, práctica visual e importación local de partituras en una app de escritorio.
 
 - 82 lecciones originales, cuatro etapas y ocho áreas, con técnica, lectura, barroco, clásico/romántico, oído, improvisación, armonía y autonomía.
 - Importación de MusicXML, MXL y MIDI; revisión de manos, compases y registro; partitura y guía de teclado generadas al guardar.

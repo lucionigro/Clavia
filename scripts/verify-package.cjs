@@ -14,7 +14,9 @@ module.exports = async function verifyPackage(context) {
         )
       : path.join(context.appOutDir, "resources");
   const archive = path.join(resources, "app.asar");
-  const files = new Set(asar.listPackage(archive));
+  const files = new Set(
+    asar.listPackage(archive).map((file) => file.replaceAll("\\", "/")),
+  );
   const required = [
     ...allowed,
     "/LICENSE",
@@ -25,7 +27,9 @@ module.exports = async function verifyPackage(context) {
   if (missing.length)
     throw new Error(`El instalador está incompleto: ${missing.join(", ")}`);
   for (const file of required) {
-    if (!asar.extractFile(archive, file.slice(1)).length)
+    if (
+      !asar.extractFile(archive, file.slice(1).split("/").join(path.sep)).length
+    )
       throw new Error(`El instalador contiene un recurso vacío: ${file}`);
   }
   console.log(
