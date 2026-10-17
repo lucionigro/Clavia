@@ -6,9 +6,13 @@ Descargá un paquete desde [Releases oficiales de este repositorio](https://gith
 
 Elegí **arm64** para Apple Silicon (M1 y posteriores) y **x64** para Intel. Abrí el DMG y arrastrá Clavia a Aplicaciones. La distribución comunitaria todavía no tiene firma Developer ID ni notarización; Gatekeeper puede bloquearla. No se modifica la configuración de seguridad del sistema. Si no aceptás ejecutar una compilación sin notarizar, podés revisar el código y usar el modo navegador o compilarla vos.
 
+Si descargaste el archivo de este repositorio y decidís abrirlo, intentá iniciar Clavia una vez. Después, en **Configuración del Sistema → Privacidad y seguridad**, buscá el aviso de Clavia y elegí **Abrir igualmente / Abrir de todos modos**; confirmá **Abrir** si aparece. La opción crea una excepción para esa app. Los nombres pueden variar con el idioma y versión; seguí la [guía oficial de Apple](https://support.apple.com/es-lamr/102445). Si el mensaje dice que el archivo está dañado o detecta una amenaza, volvé a descargar y comprobar su SHA256 en lugar de quitar protecciones.
+
 ## Windows
 
 Ejecutá el instalador x64. Se instala para tu usuario y crea accesos en el menú Inicio. El paquete no tiene un certificado comercial Authenticode; SmartScreen o el antivirus pueden advertir sobre un editor desconocido. No desactives protecciones globales para instalarla.
+
+Si aparece el aviso de aplicación desconocida, revisá que el archivo provenga de esta release y su SHA256. Cuando Windows ofrezca **Ejecutar de todos modos**, podés elegirlo si decidís confiar en esa descarga. Smart App Control o la política de una computadora administrada pueden impedirlo sin ofrecer esa opción; en ese caso usá el modo navegador. [Información oficial de Microsoft sobre firma y reputación](https://learn.microsoft.com/windows/apps/package-and-deploy/smartscreen-reputation).
 
 ## Linux
 
