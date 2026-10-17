@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#294e42" />
+    <meta
+      name="description"
+      content="Tu espacio personal para aprender teclado. Lecciones, práctica y música, de principiante a avanzado."
+    />
+    <title>Clavia — Tu camino en el teclado</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23294e42'/%3E%3Cpath d='M18 16v32m14-32v32m14-32v32' stroke='%23f7f5ee' stroke-width='7'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="studio.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Ir al contenido</a>
+    <div class="app">
+      <aside class="sidebar">
+        <a class="brand" href="#home" aria-label="Clavia, inicio"
+          ><span class="brand-mark">▥</span>clavia<span class="brand-dot"
+            >.</span
+          ></a
+        >
+        <p class="brand-caption">UN POCO CADA DÍA. MUCHA MÚSICA.</p>
+        <span class="nav-label">TU ESPACIO</span>
+        <nav aria-label="Principal" id="navigation"></nav>
+        <div class="sidebar-bottom">
+          <div class="local-status">
+            <span></span> Tu progreso vive acá<small
+              >Local, privado y sin cuentas.</small
+            >
+          </div>
+          <button
+            class="nav-item"
+            data-page="settings"
+            id="settings-nav"
+          ></button>
+          <div class="profile">
+            <div class="avatar">C</div>
+            <div>Mi espacio musical<small>Aprender a mi ritmo</small></div>
+            <span>♪</span>
+          </div>
+        </div>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <span id="breadcrumb">Mi espacio / Inicio</span>
+          <div>
+            <span class="local-tag">● MODO LOCAL</span
+            ><button class="midi-connect subtle" id="midi-button">
+              Conectar teclado <span>↗</span>
+            </button>
+            <a
+              class="header-settings"
+              href="#settings"
+              aria-label="Ajustes y conexión"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M12 2v3 M12 19v3 M2 12h3 M19 12h3 M5 5l2 2 M17 17l2 2 M5 19l2-2 M17 7l2-2"
+                /></svg
+            ></a>
+          </div>
+        </header>
+        <main id="main" tabindex="-1"></main>
+        <footer>
+          Hecho para practicar, descubrir y disfrutar.
+          <span
+            ><a
+              href="https://github.com/lucionigro/Clavia"
+              target="_blank"
+              rel="noreferrer"
+              >Código y descargas ↗</a
+            ></span
+          >
+        </footer>
+      </div>
+    </div>
+    <dialog id="lesson-dialog" aria-labelledby="lesson-title"></dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
