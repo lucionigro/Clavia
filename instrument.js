@@ -150,7 +150,7 @@ export function openSetup({ state, save, connect, getDevices, onDone }) {
               .join(
                 "",
               )}</select></label><label class="field">Tiempo que puedo dedicar<select id="setup-goal">${[10, 15, 20, 30, 45].map((n) => `<option value="${n}" ${n === goal ? "selected" : ""}>${n} minutos al día</option>`).join("")}</select></label>`
-          : `<span class="eyebrow">03 / CONECTÁ Y PROBÁ</span><h1 id="setup-title">Que Clavia te escuche.</h1><p>Con un teclado USB MIDI podemos comparar notas, ataques y cuánto sostenés cada tecla.</p><div class="setup-connection-options"><label><input type="radio" name="setup-connection" value="midi" ${draft.connection === "midi" ? "checked" : ""}><strong>Mi teclado por USB MIDI</strong><span>Conectá el puerto USB del instrumento a la computadora y encendelo.</span></label><label><input type="radio" name="setup-connection" value="virtual" ${draft.connection === "virtual" ? "checked" : ""}><strong>Primero voy a explorar la app</strong><span>Uso mouse, pantalla táctil o teclado de computadora.</span></label></div><button class="secondary" id="setup-connect">Buscar mi teclado MIDI ↗</button><div class="midi-monitor"><span class="connection-dot"></span><span data-midi-status>Esperando la conexión</span><strong data-midi-note>Tocá una nota para probar</strong></div><div class="controls"><button class="text-button" id="setup-calibrate">Detectar mi tecla más grave</button><span class="hint" id="setup-range">${draft.keys} teclas · ${instrumentRange(draft)}</span></div><p id="setup-status" class="hint" role="status">Si tu instrumento tiene sonido propio, la app puede silenciar su sonido de entrada para evitar duplicación. No hace falta micrófono.</p>`
+          : `<span class="eyebrow">03 / CONECTÁ Y PROBÁ</span><h1 id="setup-title">Que Clavia te escuche.</h1><p>Con un teclado USB MIDI podemos comparar notas, ataques y cuánto sostenés cada tecla.</p><div class="setup-connection-options"><label><input type="radio" name="setup-connection" value="midi" ${draft.connection === "midi" ? "checked" : ""}><strong>Mi teclado por USB MIDI</strong><span>Conectá el puerto USB del instrumento a la computadora y encendelo.</span></label><label><input type="radio" name="setup-connection" value="virtual" ${draft.connection === "virtual" ? "checked" : ""}><strong>Primero voy a explorar la app</strong><span>Uso mouse, pantalla táctil o teclado de computadora.</span></label></div><button class="secondary" id="setup-connect">Buscar mi teclado MIDI ↗</button><div class="midi-monitor"><span class="connection-dot"></span><span data-midi-status>Esperando la conexión</span><strong data-midi-note>Tocá una nota para probar</strong></div><div class="controls"><button class="text-button" id="setup-calibrate">Detectar mi tecla más grave</button><span class="hint" id="setup-range">${draft.keys} teclas · ${instrumentRange(draft)}</span></div><label class="field">¿Dónde querés escuchar lo que tocás?<select id="setup-audio"><option value="app" ${draft.localSound ? "selected" : ""}>En Clavia · también para controladores sin sonido</option><option value="instrument" ${!draft.localSound ? "selected" : ""}>En mi instrumento · tiene sonido propio</option></select></label><p id="setup-status" class="hint" role="status">Si tu instrumento tiene sonido propio, la app puede silenciar su sonido de entrada para evitar duplicación. No hace falta micrófono.</p>`
     }<div class="setup-actions">${step ? '<button class="text-button" data-setup-back>← Volver</button>' : '<button class="text-button" data-setup-later>Configurar después</button>'}<button class="dark-button" data-setup-next>${step === 2 ? "Entrar a Clavia →" : "Continuar →"}</button></div></section></div>`;
     d.querySelector("[data-setup-close]").onclick = () => d.close();
     d.querySelector("[data-setup-later]")?.addEventListener("click", () =>
@@ -167,10 +167,12 @@ export function openSetup({ state, save, connect, getDevices, onDone }) {
         profile.focus = d.querySelector("#setup-focus").value;
         goal = Number(d.querySelector("#setup-goal").value);
       }
-      if (step === 2)
+      if (step === 2) {
         draft.connection = d.querySelector(
           '[name="setup-connection"]:checked',
         ).value;
+        draft.localSound = d.querySelector("#setup-audio").value === "app";
+      }
     };
     if (step === 0)
       d.querySelector("#setup-keys").onchange = (e) => {
@@ -206,7 +208,7 @@ export function openSetup({ state, save, connect, getDevices, onDone }) {
         return;
       }
       draft.configured = true;
-      draft.localSound = draft.connection === "virtual";
+
       state.instrument = validateInstrument(draft);
       state.profile = validateProfile(profile);
       state.goal = goal;

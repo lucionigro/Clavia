@@ -466,6 +466,7 @@ async function connectMIDI() {
         !connected.some((input) => input.id === state.instrument.midiId)
       )
         state.instrument.midiId = connected[0].id;
+      if (connected.length) state.instrument.connection = "midi";
       updateMIDIMonitor({ devices: getMIDIDevices() });
       $("#midi-button").textContent = connected.length
         ? "Teclado conectado ✓"

@@ -1,0 +1,38 @@
+name: Reportar un problema
+description: Algo no funciona como esperabas en Clavia.
+title: '[Bug] '
+body:
+  - type: markdown
+    attributes:
+      value: 'No publiques credenciales, copias de progreso, diarios ni partituras privadas. Una reproducción mínima con el ejemplo incluido suele ser suficiente.'
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Clavia
+      placeholder: 1.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: system
+    attributes:
+      label: Sistema
+      options: [Mac Apple Silicon, Mac Intel, Windows, Linux, Navegador]
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Pasos para reproducirlo
+      description: Qué hiciste, qué esperabas y qué ocurrió.
+    validations:
+      required: true
+  - type: input
+    id: instrument
+    attributes:
+      label: Teclado y conexión
+      description: Modelo, cantidad de teclas y USB MIDI o virtual; no incluyas identificadores personales.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencia opcional
+      description: Revisá capturas y mensajes antes de compartirlos. Quitá nombres y datos privados.
