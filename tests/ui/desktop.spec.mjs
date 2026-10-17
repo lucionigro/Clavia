@@ -2,6 +2,7 @@ import { test, expect, _electron as electron } from "@playwright/test";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import policy from "../../desktop/policy.cjs";
 test("La app empaquetada abre sin servidor, admite MIDI y conserva progreso al reiniciar", async () => {
   test.skip(
     process.env.CLAVIA_DESKTOP !== "1",
@@ -11,7 +12,8 @@ test("La app empaquetada abre sin servidor, admite MIDI y conserva progreso al r
   const launch = () =>
     electron.launch({
       executablePath: path.resolve(
-        "dist/mac-arm64/Clavia.app/Contents/MacOS/Clavia",
+        process.env.CLAVIA_EXECUTABLE ||
+          "dist/mac-arm64/Clavia.app/Contents/MacOS/Clavia",
       ),
       env: { ...process.env, CLAVIA_TEST_PROFILE: profile },
     });
@@ -22,6 +24,27 @@ test("La app empaquetada abre sin servidor, admite MIDI y conserva progreso al r
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await expect(page).toHaveTitle(/Clavia/);
+    const resources = await page.evaluate(
+      async (files) =>
+        Promise.all(
+          files.map(async (file) => {
+            const response = await fetch(`clavia://app${file}`);
+            return {
+              file,
+              status: response.status,
+              bytes: (await response.arrayBuffer()).byteLength,
+            };
+          }),
+        ),
+      policy.allowed,
+    );
+    expect(resources.filter((r) => r.status !== 200 || !r.bytes)).toEqual([]);
+    await page.evaluate(() => document.fonts.ready);
+    expect(
+      await page
+        .locator("body")
+        .evaluate((el) => getComputedStyle(el).fontFamily),
+    ).toContain("Manrope");
     await page.locator("[data-setup-later]").click();
     expect(page.url()).toMatch(/^clavia:\/\/app\/index.html/);
     await page.locator("#midi-button").click();

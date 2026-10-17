@@ -8,7 +8,7 @@ const folder = path.resolve("artifacts/demo"),
   rawManifest = JSON.parse(
     await readFile(path.join(folder, "manifest.json"), "utf8"),
   );
-const trimStart = (rawManifest.scenes[0]?.start || 0) + 0.18;
+const trimStart = (rawManifest.scenes[0]?.start || 0) + 0.4;
 const manifest = {
   ...rawManifest,
   duration: rawManifest.duration - trimStart,
@@ -126,7 +126,13 @@ const filters = [
 ];
 let index = 0;
 for (const scene of manifest.scenes) {
-  if (!scene.caption) continue;
+  if (!scene.caption) {
+    // Limpia el borde de foco de las placas sin alterar los controles de la app.
+    filters.push(
+      `drawbox=x=0:y=0:w=iw:h=ih:color=0xf6f5ee:t=5:enable='between(t,${scene.start},${scene.end})'`,
+    );
+    continue;
+  }
   const caption = path.join(folder, `caption-${index}.txt`),
     title = path.join(folder, `title-${index}.txt`);
   await writeFile(caption, scene.caption);
@@ -163,6 +169,8 @@ await run([
   "-hide_banner",
   "-loglevel",
   "warning",
+  "-ss",
+  String(trimStart),
   "-i",
   path.join(folder, manifest.raw),
   "-i",
@@ -228,6 +236,21 @@ for (const t of [
     "1",
     path.join(folder, `review-${t}.png`),
   ]);
+const stamp = (t) => {
+  const ms = Math.round(Math.max(0, t) * 1000);
+  return `${String(Math.floor(ms / 3600000)).padStart(2, "0")}:${String(Math.floor(ms / 60000) % 60).padStart(2, "0")}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}.${String(ms % 1000).padStart(3, "0")}`;
+};
+await writeFile(
+  "dist/Clavia-demo.vtt",
+  "WEBVTT\n\n" +
+    manifest.scenes
+      .filter((s) => s.caption)
+      .map(
+        (s) =>
+          `${stamp(s.start)} --> ${stamp(s.end)}\n${s.title}\n${s.caption}\n`,
+      )
+      .join("\n"),
+);
 await copyFile(output, path.join(folder, "Clavia-demo.mp4"));
 console.log(
   JSON.stringify({

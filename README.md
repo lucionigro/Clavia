@@ -6,9 +6,9 @@
 
 Aprendé teclado con partituras, guías de teclas, práctica MIDI y un camino musical completo. **Local, de código abierto y sin suscripciones.**
 
-[Descargar Clavia](https://github.com/lucionigro/Clavia/releases/latest) · [Ver la demo](https://github.com/lucionigro/Clavia/releases/download/v1.2.0/Clavia-demo.mp4) · [Cómo empezar](docs/INSTALL.md) · [Importar partituras](docs/IMPORT.md)
+[Descargar Clavia](https://github.com/lucionigro/Clavia/releases/latest) · [Ver la demo](https://github.com/lucionigro/Clavia/releases/download/v1.2.1/Clavia-demo.mp4) · [Cómo empezar](docs/INSTALL.md) · [Importar partituras](docs/IMPORT.md)
 
-[![Clavia: una partitura y dos manos que aprenden a conversar](docs/media/clavia-cover.png)](https://github.com/lucionigro/Clavia/releases/download/v1.2.0/Clavia-demo.mp4)
+[![Clavia: una partitura y dos manos que aprenden a conversar](docs/media/clavia-cover.png)](https://github.com/lucionigro/Clavia/releases/download/v1.2.1/Clavia-demo.mp4)
 
 </div>
 
@@ -21,10 +21,10 @@ Aprendé teclado con partituras, guías de teclas, práctica MIDI y un camino mu
 
 | Tu equipo | Archivo en Releases |
 | --- | --- |
-| Mac Apple Silicon, M1 o posterior | `Clavia-1.2.0-mac-arm64.dmg` |
-| Mac Intel | `Clavia-1.2.0-mac-x64.dmg` |
-| Windows de 64 bits | `Clavia-1.2.0-windows-x64.exe` |
-| Linux de 64 bits | `Clavia-1.2.0-linux-x64.AppImage` o `.deb` |
+| Mac Apple Silicon, M1 o posterior | `Clavia-1.2.1-mac-arm64.dmg` |
+| Mac Intel | `Clavia-1.2.1-mac-x64.dmg` |
+| Windows de 64 bits | `Clavia-1.2.1-windows-x64.exe` |
+| Linux de 64 bits | `Clavia-1.2.1-linux-x86_64.AppImage` o `Clavia-1.2.1-linux-amd64.deb` |
 
 **Versión comunitaria sin firma comercial.** Los paquetes no están firmados ni notarizados con Apple/Microsoft; el sistema puede advertir o bloquear su apertura. Consultá [instalación y compatibilidad](docs/INSTALL.md). La prueba con teclados físicos depende del modelo y del sistema: no se afirma compatibilidad probada con cada instrumento. Las compilaciones de otros sistemas deben distinguirse de una prueba física de ejecución y MIDI.
 
@@ -98,7 +98,7 @@ npm run package:mac
 npm run test:desktop
 ```
 
-`test:desktop` usa un perfil temporal y requiere el paquete macOS arm64 ya construido. Las pruebas automáticas de MIDI usan mensajes simulados y la API; no sustituyen conectar y calibrar un instrumento real.
+`test:desktop` usa un perfil temporal y requiere el paquete macOS arm64 ya construido. `CLAVIA_EXECUTABLE` permite probar otro ejecutable, por ejemplo el de un DMG publicado montado en modo lectura. Las pruebas automáticas de MIDI usan mensajes simulados y la API; no sustituyen conectar y calibrar un instrumento real.
 
 La automatización de Releases compila macOS arm64/x64, Windows x64 y Linux x64. Las dependencias de desarrollo se fijan mediante `package-lock.json`; el renderer no incorpora Node y el servidor solo expone los recursos de la app. [Arquitectura, contribuciones y video](CONTRIBUTING.md).
 

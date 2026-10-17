@@ -44,8 +44,8 @@ await context.addInitScript(() => {
   };
   document.addEventListener("DOMContentLoaded", install);
 });
+const started = Date.now();
 const page = await context.newPage(),
-  started = Date.now(),
   scenes = [],
   camera = [{ t: 0, z: 1, x: 0.5, y: 0.5 }];
 const errors = [];
@@ -120,7 +120,7 @@ async function slate(outro = false) {
     const d = document.createElement("dialog");
     d.id = "demo-slate";
     d.style.cssText =
-      "width:100vw;max-width:none;height:100vh;max-height:none;inset:0;margin:0;padding:0;border:0;background:#f6f5ee;color:#294e42;";
+      "width:100vw;max-width:none;height:100vh;max-height:none;inset:0;margin:0;padding:0;border:0;border-radius:0;outline:none;background:#f6f5ee;color:#294e42;";
     d.innerHTML = `<div style="height:100%;display:flex;flex-direction:column;justify-content:center;padding:100px 160px;position:relative;overflow:hidden"><span style="font:700 21px Manrope;letter-spacing:5px;margin-bottom:45px">TU ESPACIO PARA HACER MÚSICA</span><div style="font:800 105px Manrope;letter-spacing:-9px;line-height:1.2">clavia<span style="color:#99ad76">.</span></div><h2 style="font-size:86px;max-width:1000px;line-height:1.04;margin:32px 0 22px">${outro ? "Empezá por una nota." : "Tu música,<br>a tu ritmo."}</h2><p style="font:450 23px Manrope;color:#6b785e;max-width:900px">${outro ? "Descargá la app y hacé tuyo el próximo paso." : "Partituras, teclado e ideas que se convierten en música."}</p><div style="font:550 16px Manrope;letter-spacing:1px;margin-top:45px">${outro ? "github.com/lucionigro/Clavia" : "LECTURA &nbsp; · &nbsp; DOS MANOS &nbsp; · &nbsp; IMPROVISACIÓN"}</div><div style="position:absolute;right:-80px;top:110px;width:360px;height:650px;border:1px solid #d5dec9;border-radius:180px;transform:rotate(17deg);background:repeating-linear-gradient(90deg,#e4ebd8 0px,#e4ebd8 40px,#f6f5ee 40px,#f6f5ee 44px);opacity:.55;z-index:-1"></div></div>`;
     document.body.appendChild(d);
     d.showModal();

@@ -1,6 +1,6 @@
 {
   "name": "clavia",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "type": "module",
   "description": "Aprendé teclado de principiante a avanzado, en tu navegador y sin servicios externos.",
@@ -22,6 +22,7 @@
     "privacy:check": "node scripts/audit-public.mjs"
   },
   "devDependencies": {
+    "@electron/asar": "3.4.1",
     "@fontsource-variable/manrope": "^5.3.0",
     "@fontsource-variable/newsreader": "^5.3.0",
     "@playwright/test": "^1.64.1",
@@ -45,6 +46,7 @@
     "files": [
       "index.html",
       "style.css",
+      "studio.css",
       "*.js",
       "desktop/**",
       "package.json",
@@ -115,7 +117,8 @@
       "icon": "build/icon.png",
       "maintainer": "Clavia contributors <115739237+lucionigro@users.noreply.github.com>",
       "artifactName": "Clavia-${version}-linux-${arch}.${ext}"
-    }
+    },
+    "afterPack": "./scripts/verify-package.cjs"
   },
   "repository": {
     "type": "git",
