@@ -80,8 +80,14 @@ test("El plan distribuye el tiempo y el foco clásico conserva las bases de un p
     plan.reduce((n, p) => n + p.minutes, 0),
     15,
   );
-  assert.equal(lessons.find((l) => l.id === plan[1].lesson).level, 0);
-  assert.equal(plan[3].tool, "improv");
+  assert.equal(
+    lessons.find((l) => l.id === plan.find((p) => p.id === "learn").lesson)
+      .level,
+    0,
+  );
+  assert.equal(plan.find((p) => p.id === "learn").lesson, lessons[4].id);
+  assert.equal(plan.length, 1);
+  assert.equal(plan[0].tool, undefined);
 });
 test("Las copias conservan diario, evidencia y perfil con límites y datos seguros", () => {
   const s = defaultState();
@@ -161,4 +167,47 @@ test("Una improvisación se describe sin calificar creatividad y su MIDI conserv
     parsed = parseMIDI(bytes.buffer);
   assert.equal(parsed.tracks[0].notes.length, 3);
   assert.equal(parsed.bpm, 60);
+});
+
+test("El camino es único, no omite clases ni adelanta etapas, y repara huecos del progreso anterior", async () => {
+  const { courseChapters, nextPathLesson } =
+    await import("../learning-path.js");
+  const ids = courseChapters.flatMap((c) => c.ids);
+  assert.equal(ids.length, 82);
+  assert.equal(new Set(ids).size, 82);
+  assert.deepEqual(
+    lessons.map((l) => l.id),
+    ids,
+  );
+  for (const c of courseChapters) {
+    assert.ok(
+      c.ids.every((id) => lessons.find((l) => l.id === id)?.level === c.level),
+    );
+  }
+  const s = defaultState();
+  for (let i = 0; i < lessons.length; i++) {
+    assert.equal(nextPathLesson(s, lessons).id, lessons[i].id);
+    assert.equal(
+      buildDailyPlan(s, lessons).find((p) => p.id === "learn").lesson,
+      lessons[i].id,
+    );
+    s.completed.push(lessons[i].id);
+  }
+  assert.equal(nextPathLesson(s, lessons), undefined);
+  assert.equal(
+    buildDailyPlan(s, lessons).find((p) => p.id === "learn").lesson,
+    undefined,
+  );
+  s.completed = lessons.filter((l) => l.id !== "mapa").map((l) => l.id);
+  s.profile.experience = "advanced";
+  s.profile.focus = "classical";
+  assert.equal(
+    buildDailyPlan(s, lessons).find((p) => p.id === "learn").lesson,
+    "mapa",
+  );
+  assert.ok(
+    !buildDailyPlan(defaultState(), lessons).some(
+      (p) => p.tool === "scales" || p.tool === "improv",
+    ),
+  );
 });

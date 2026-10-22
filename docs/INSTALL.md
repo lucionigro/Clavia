@@ -26,7 +26,8 @@ El asistente pregunta cantidad de teclas (25, 32, 37, 49, 61, 73, 76 u 88), regi
 2. Tocá **Buscar mi teclado MIDI**. En el modo navegador usá Chrome/Edge con Web MIDI y concedé el permiso. La app de escritorio integra Chromium y solicita acceso MIDI sin SysEx.
 3. En Ajustes seleccioná el dispositivo si hay varios. Tocá una nota y verificá nombre y velocidad en el monitor.
 4. Si el instrumento suena por sus parlantes y escuchás duplicación, elegí **Solo mi instrumento físico**. La guía y el oído siguen teniendo sonido.
-5. Detectá la tecla más grave y verificá que el rango corresponda al instrumento. La app advierte cuando una pieza sale de ese registro y nunca transporta una obra en silencio.
+5. Si elegís escuchar en Clavia, seleccioná **Piano de cola**, **Piano suave**, **Piano eléctrico** u **Órgano** y usá **Probar sonido**. La preferencia se conserva y también se aplica a las guías. Piano de cola y suave usan muestras locales; eléctrico y órgano usan síntesis. Podés cambiarlo en Ajustes o en Practicar → Teclado libre.
+6. Detectá la tecla más grave y verificá que el rango corresponda al instrumento. La app advierte cuando una pieza sale de ese registro y nunca transporta una obra en silencio.
 
 Si no aparece: revisá encendido, cable de datos, puerto USB, permisos y si otro programa está usando el dispositivo. Algunos instrumentos requieren el controlador del fabricante. MIDI transporta mensajes; el cable no convierte automáticamente el sonido del teclado en audio grabado. Los teclados sin USB MIDI necesitan una interfaz MIDI compatible.
 

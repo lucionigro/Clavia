@@ -1,3 +1,9 @@
+import { KeyboardSound, soundOptions, validateSound } from "./sound.js";
+import {
+  chapterForLesson,
+  courseChapters,
+  nextPathLesson,
+} from "./learning-path.js";
 import { courseHTML, bindCourse } from "./course-ui.js";
 import { ImprovisationLab } from "./improvisation.js";
 import { AuralLab } from "./aural-lab.js";
@@ -139,6 +145,7 @@ let page = "home",
   rhythm = null,
   ear = null,
   audioContext,
+  keyboardSound,
   midiAccess,
   midiSustain = false;
 let guidedPractice = null,
@@ -150,51 +157,35 @@ let demoTimers = [],
   voices = new Map(),
   held = new Set();
 function audio() {
-  if (!audioContext)
+  if (!audioContext) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    keyboardSound = new KeyboardSound(audioContext, () =>
+      toast(
+        "No se pudo cargar el piano. Probá otro sonido o volvé a abrir Clavia.",
+      ),
+    );
+    keyboardSound.prepare().catch(() => {});
+  }
   if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
   return audioContext;
 }
-function startSound(n, velocity = 0.7, key = `note:${n}`) {
-  if (voices.has(key)) stopSound(key);
-  const ctx = audio(),
-    t = ctx.currentTime;
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(
-    Math.max(0.0001, state.volume * velocity * 0.26),
-    t + 0.012,
-  );
-  gain.gain.exponentialRampToValueAtTime(
-    Math.max(0.0001, state.volume * velocity * 0.08),
-    t + 1.6,
-  );
-  gain.connect(ctx.destination);
-  const oscs = [1, 2, 3].map((partial, i) => {
-    const osc = ctx.createOscillator(),
-      g = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = 440 * 2 ** ((n - 69) / 12) * partial;
-    g.gain.value = [1, 0.22, 0.08][i];
-    osc.connect(g);
-    g.connect(gain);
-    osc.start();
-    return osc;
-  });
-  voices.set(key, { gain, oscs, n });
+function startSound(
+  n,
+  velocity = 0.7,
+  key = `note:${n}`,
+  preset = state.instrument.sound,
+) {
+  stopSound(key);
+  audio();
+  if (voices.size >= 64) stopSound(voices.keys().next().value);
+  const voice = keyboardSound.start(n, velocity, state.volume, preset);
+  voices.set(key, voice);
   setTimeout(() => {
-    if (voices.get(key)?.gain === gain) stopSound(key);
-  }, 10000);
+    if (voices.get(key) === voice) stopSound(key);
+  }, 30000);
 }
 function stopSound(key) {
-  const voice = voices.get(key);
-  if (!voice) return;
-  const ctx = audioContext,
-    t = ctx.currentTime;
-  voice.gain.gain.cancelScheduledValues(t);
-  voice.gain.gain.setTargetAtTime(0, t, 0.065);
-  voice.oscs.forEach((o) => o.stop(t + 0.4));
-  setTimeout(() => voice.gain.disconnect(), 450);
+  voices.get(key)?.stop();
   voices.delete(key);
 }
 function stopAll() {
@@ -535,10 +526,27 @@ function navigate(next) {
   render();
   window.scrollTo(0, 0);
 }
+document.addEventListener("change", (e) => {
+  if (!e.target.matches("[data-sound-preset]")) return;
+  stopAll();
+  state.instrument.sound = validateSound(e.target.value);
+  save();
+});
 document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-sound-preview]")) {
+    stopDemo();
+    const preset =
+      document.querySelector("#setup-tone")?.value || state.instrument.sound;
+    [60, 64, 67].forEach((n, i) => {
+      const key = `demo:preview:${i}`;
+      startSound(n, 0.65, key, preset);
+      demoTimers.push(setTimeout(() => stopSound(key), 1300));
+    });
+  }
   const domainButton = e.target.closest("[data-course-domain]");
   if (domainButton) {
     courseDomain = domainButton.dataset.courseDomain;
+    filter = -1;
     if (page !== "course") navigate("course");
     else render();
   }
@@ -636,8 +644,7 @@ function pianoArt() {
   return `<svg viewBox="0 0 440 280" role="img" aria-label="Ilustración de un teclado sobre formas orgánicas"><defs><pattern id="grain" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".6" fill="#ced8b3" opacity=".15"/></pattern></defs><circle cx="250" cy="125" r="107" fill="#a9bd83" opacity=".17"/><circle cx="250" cy="125" r="86" fill="none" stroke="#b4c398" stroke-width=".6" opacity=".4"/><path d="M68 235c20-52 44-75 62-76-6 32-27 55-62 76M67 236c-13-39-9-67 8-87 12 31 7 57-8 87M350 66c8-24 27-42 51-43-4 26-26 40-51 43" fill="#a9bd83" opacity=".5"/><path d="m66 245 42-68m245-110 38-30" stroke="#c3d0a6" fill="none" opacity=".5"/><g transform="translate(80 87) rotate(-12 145 55)"><rect x="-4" y="-14" width="304" height="123" rx="10" fill="#152e26"/><rect width="290" height="98" rx="4" fill="#e8e8ca"/>${Array.from({ length: 14 }, (_, i) => `<rect x="${i * 20.7}" y="0" width="19.7" height="95" rx="2" fill="${i % 4 === 0 ? "#d7dfba" : "#f2f0d8"}"/>`).join("")}${[1, 2, 4, 5, 6, 8, 9, 11, 12, 13].map((i) => `<rect x="${i * 20.7 - 6}" y="0" width="12" height="59" rx="2" fill="#233a2e"/><rect x="${i * 20.7 - 4}" y="0" width="8" height="54" rx="1" fill="#334a3a"/>`).join("")}<rect x="-4" y="-14" width="304" height="14" rx="4" fill="#192e24"/></g><text x="130" y="51" font-family="Georgia" font-size="29" fill="#c2d19d" transform="rotate(-12 130 51)">♪</text><text x="373" y="186" font-family="Georgia" font-size="34" fill="#c2d19d" transform="rotate(13 373 186)">♫</text><circle cx="104" cy="76" r="3" fill="#d3dfb2"/><circle cx="341" cy="227" r="2" fill="#d3dfb2"/><path d="M318 45v12m-6-6h12" stroke="#d3dfb2"/><rect width="440" height="280" fill="url(#grain)"/></svg>`;
 }
 function home() {
-  const next =
-    lessons.find((l) => !state.completed.includes(l.id)) || lessons[0];
+  const next = nextPathLesson(state, lessons) || lessons[0];
   return (
     heading(
       "TU MÚSICA EMPIEZA ACÁ",
@@ -680,7 +687,7 @@ function home() {
 }
 function dailyPlanHTML() {
   const plan = buildDailyPlan(state, lessons);
-  return `<section class="daily-plan"><div class="section-title"><div><span class="eyebrow">UNA SESIÓN POSIBLE · ${state.goal} MINUTOS</span><h2>Hoy, un poco más de música.</h2></div><button class="text-button" data-page="settings">Ajustar mi plan ↗</button></div><div class="daily-plan-steps">${plan.map((item, i) => `<button ${item.lesson ? `data-lesson="${item.lesson}"` : item.tool ? `data-tool="${item.tool}"` : `data-page="${item.page || "course"}"`}><span class="plan-index">0${i + 1}</span><div><strong>${item.title}</strong><small>${esc(item.detail)}</small></div><span>${item.minutes} min ↗</span></button>`).join("")}</div></section>`;
+  return `<section class="daily-plan"><div class="section-title"><div><span class="eyebrow">UNA SESIÓN POSIBLE · ${state.goal} MINUTOS</span><h2>${plan.length === 1 ? "Hoy, tu siguiente paso." : "Hoy, un poco más de música."}</h2></div><button class="text-button" data-page="settings">Ajustar mi plan ↗</button></div><div class="daily-plan-steps ${plan.length === 1 ? "single-step" : ""}">${plan.map((item, i) => `<button ${item.lesson ? `data-lesson="${item.lesson}"` : item.tool ? `data-tool="${item.tool}"` : `data-page="${item.page || "course"}"`}><span class="plan-index">0${i + 1}</span><div><strong>${item.title}</strong><small>${esc(item.detail)}</small></div><span>${item.minutes} min ↗</span></button>`).join("")}</div></section>`;
 }
 function course() {
   return courseHTML({
@@ -763,7 +770,7 @@ function renderTool() {
     return;
   }
   if (practiceTab === "free") {
-    root.innerHTML = `<h2>Que suene tu curiosidad.</h2><p>Probá una melodía, buscá un acorde o simplemente escuchá. Podés usar mouse, pantalla táctil, tu computadora o un teclado MIDI.</p><div class="controls"><label>Volumen <input aria-label="Volumen" id="volume" type="range" min="0" max="1" step="0.05" value="${state.volume}"></label><label>Registro <select id="octave"><option value="48">Do3–Do5 · Grave</option><option value="60" selected>Do4–Do6 · Central</option><option value="72">Do5–Do7 · Agudo</option></select></label><label><input id="show-labels" type="checkbox" ${state.labels ? "checked" : ""}> Mostrar notas</label></div><div id="free-piano">${pianoHTML()}</div><div class="feedback" id="free-note" aria-live="polite">Tu próxima nota puede ser el comienzo de algo.</div><p class="hint">El sonido es una síntesis local de teclado. MIDI recibe las notas del instrumento, sin grabar audio ni usar el micrófono.</p>`;
+    root.innerHTML = `<h2>Que suene tu curiosidad.</h2><p>Probá una melodía, buscá un acorde o simplemente escuchá. Podés usar mouse, pantalla táctil, tu computadora o un teclado MIDI.</p><div class="controls"><label>Volumen <input aria-label="Volumen" id="volume" type="range" min="0" max="1" step="0.05" value="${state.volume}"></label><label>Sonido <select data-sound-preset aria-label="Sonido del teclado">${soundOptions(state.instrument.sound)}</select></label><button class="secondary" data-sound-preview>Probar sonido ♪</button><label>Registro <select id="octave"><option value="48">Do3–Do5 · Grave</option><option value="60" selected>Do4–Do6 · Central</option><option value="72">Do5–Do7 · Agudo</option></select></label><label><input id="show-labels" type="checkbox" ${state.labels ? "checked" : ""}> Mostrar notas</label></div><div id="free-piano">${pianoHTML()}</div><div class="feedback" id="free-note" aria-live="polite">Tu próxima nota puede ser el comienzo de algo.</div><p class="hint">El piano usa muestras grabadas incluidas en la app. Los sonidos eléctrico y órgano se sintetizan localmente. MIDI recibe las notas del instrumento, sin grabar audio ni usar el micrófono.</p>`;
     $("#volume").oninput = (e) => {
       state.volume = Number(e.target.value);
       save();
@@ -998,7 +1005,7 @@ function settings() {
       "A tu manera.",
       "Todo funciona en tu computadora, sin cuentas ni servicios externos.",
     ) +
-    `<div class="grid-two"><section class="panel"><h2>Tu práctica diaria</h2><label class="field">Meta diaria<select id="daily-goal">${[10, 15, 20, 30, 45].map((n) => `<option value="${n}" ${state.goal === n ? "selected" : ""}>${n} minutos</option>`).join("")}</select></label><label class="field">Volumen<input id="settings-volume" type="range" min="0" max="1" step="0.05" value="${state.volume}"></label><p class="hint">Una sesión posible: 3 min de entrada en calor, 5 de técnica, 5 de repertorio y 2 de exploración. Adaptala a tu nivel.</p></section><section class="panel"><h2>Tu progreso te pertenece</h2><p>Exportá una copia completa para llevar tus avances, favoritos y arreglos MIDI a la app de escritorio o a otro navegador. Borrar los datos del navegador elimina su guardado local.</p><div class="controls"><button class="secondary" id="export-progress">Exportar copia completa ↓</button><button class="secondary" id="import-progress">Importar copia ↑</button><input type="file" id="import-file" accept="application/json,.json" hidden></div><p class="settings-info">${storageOk ? "Guardado local disponible." : "El almacenamiento local no está disponible. Exportá una copia antes de cerrar."}</p><button class="text-button danger" id="reset-progress">Reiniciar mi progreso</button></section></div><section class="panel"><h2>Del navegador a tu instrumento</h2><p>La app ofrece sonido sintetizado, entrada por mouse, pantalla táctil y teclado de computadora. Para recibir notas de un teclado USB MIDI, usá un navegador con Web MIDI y concedé el permiso al conectar.</p><button class="secondary" id="settings-midi">Conectar teclado MIDI ↗</button><p class="hint">La práctica visual verifica notas y duración por MIDI; en el modo con pulso también comprueba los ataques; no analiza tu postura ni escucha el audio de un instrumento acústico. Las prácticas de coordinación, expresión, pedal y repertorio incluyen una autoevaluación en tu instrumento.</p></section><section class="panel"><h2>Profundizá lo aprendido</h2><p>El programa incluye fundamentos, lectura, técnica, armonía, oído e introducción a recursos avanzados. Dominar un instrumento requiere práctica sostenida y feedback sobre cómo tocás.</p><p class="hint">Referencia para ampliar teoría: <a class="source-link" href="https://viva.pressbooks.pub/openmusictheory/" target="_blank" rel="noreferrer">Open Music Theory</a>. Compatibilidad MIDI: <a class="source-link" href="https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API" target="_blank" rel="noreferrer">MDN Web MIDI</a>. Las lecciones están redactadas para esta app.</p></section>`
+    `<div class="grid-two"><section class="panel"><h2>Tu práctica diaria</h2><label class="field">Meta diaria<select id="daily-goal">${[10, 15, 20, 30, 45].map((n) => `<option value="${n}" ${state.goal === n ? "selected" : ""}>${n} minutos</option>`).join("")}</select></label><label class="field">Volumen<input id="settings-volume" type="range" min="0" max="1" step="0.05" value="${state.volume}"></label><p class="hint">Una sesión posible: 3 min de entrada en calor, 5 de técnica, 5 de repertorio y 2 de exploración. Adaptala a tu nivel.</p></section><section class="panel"><h2>Tu progreso te pertenece</h2><p>Exportá una copia completa para llevar tus avances, favoritos y arreglos MIDI a la app de escritorio o a otro navegador. Borrar los datos del navegador elimina su guardado local.</p><div class="controls"><button class="secondary" id="export-progress">Exportar copia completa ↓</button><button class="secondary" id="import-progress">Importar copia ↑</button><input type="file" id="import-file" accept="application/json,.json" hidden></div><p class="settings-info">${storageOk ? "Guardado local disponible." : "El almacenamiento local no está disponible. Exportá una copia antes de cerrar."}</p><button class="text-button danger" id="reset-progress">Reiniciar mi progreso</button></section></div><section class="panel"><h2>Del navegador a tu instrumento</h2><p>La app ofrece piano con muestras grabadas y sonidos de teclado seleccionables, entrada por mouse, pantalla táctil y teclado de computadora. Para recibir notas de un teclado USB MIDI, usá un navegador con Web MIDI y concedé el permiso al conectar.</p><button class="secondary" id="settings-midi">Conectar teclado MIDI ↗</button><p class="hint">La práctica visual verifica notas y duración por MIDI; en el modo con pulso también comprueba los ataques; no analiza tu postura ni escucha el audio de un instrumento acústico. Las prácticas de coordinación, expresión, pedal y repertorio incluyen una autoevaluación en tu instrumento.</p></section><section class="panel"><h2>Profundizá lo aprendido</h2><p>El programa incluye fundamentos, lectura, técnica, armonía, oído e introducción a recursos avanzados. Dominar un instrumento requiere práctica sostenida y feedback sobre cómo tocás.</p><p class="hint">Referencia para ampliar teoría: <a class="source-link" href="https://viva.pressbooks.pub/openmusictheory/" target="_blank" rel="noreferrer">Open Music Theory</a>. Compatibilidad MIDI: <a class="source-link" href="https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API" target="_blank" rel="noreferrer">MDN Web MIDI</a>. Las lecciones están redactadas para esta app.</p></section>`
   );
 }
 function bindSettings() {
@@ -1437,7 +1444,8 @@ function renderLesson() {
   rhythm = null;
   exercise = null;
   const steps = ["Comprender", "Tocar", "Comprobar", "Al instrumento"];
-  dialog.innerHTML = `<div class="dialog-head"><div><span class="eyebrow">${levels[lesson.level].tag} · LECCIÓN ${lessons.indexOf(lesson) + 1} · ${lesson.minutes} MIN</span><h2 id="lesson-title">${lesson.title}</h2><span class="hint">${lesson.subtitle}</span></div><button class="close" aria-label="Cerrar lección">×</button></div><div class="dialog-body"><div class="lesson-steps">${steps.map((s, i) => `<span class="${i === lessonStep ? "active" : ""}">${i < lessonStep ? "✓" : i + 1} ${s}</span>`).join("")}</div><div id="lesson-content"></div></div>`;
+  const chapter = chapterForLesson(lesson.id);
+  dialog.innerHTML = `<div class="dialog-head"><div><span class="eyebrow">BLOQUE ${courseChapters.indexOf(chapter) + 1} · PASO ${lessons.indexOf(lesson) + 1} DE ${lessons.length} · ${lesson.minutes} MIN</span><h2 id="lesson-title">${lesson.title}</h2><span class="hint">${lesson.subtitle}</span></div><button class="close" aria-label="Cerrar lección">×</button></div><div class="dialog-body"><p class="lesson-context">${esc(chapter.title)}</p><div class="lesson-steps" aria-label="Etapas de la lección">${steps.map((s, i) => `<span class="${i === lessonStep ? "active" : ""}">${i < lessonStep ? "✓" : i + 1} ${s}</span>`).join("")}</div><div id="lesson-content"></div></div>`;
   $(".close", dialog).onclick = () => dialog.close();
   const content = $("#lesson-content");
   if (lessonStep === 0) {
@@ -1500,8 +1508,8 @@ function renderLesson() {
       state.completed = [...new Set([...state.completed, lesson.id])];
       state.practiceChecks[lesson.id] = true;
       save();
-      const next = lessons[lessons.indexOf(lesson) + 1];
-      content.innerHTML = `<div class="completion"><div class="seal">✓</div><span class="eyebrow">UN PASO MÁS EN TU CAMINO</span><h3>Esta música ya es un poco tuya.</h3><p>Completaste “${lesson.title}”. Volvé a practicarla cuando quieras.</p><div class="controls" style="justify-content:center"><button class="secondary" id="finish-close">Volver a mi espacio</button>${next ? `<button class="dark-button" id="next-lesson">Siguiente lección →</button>` : ""}</div></div>`;
+      const next = nextPathLesson(state, lessons);
+      content.innerHTML = `<div class="completion"><div class="seal">✓</div><span class="eyebrow">UN PASO MÁS EN TU CAMINO</span><h3>Esta música ya es un poco tuya.</h3><p>Completaste “${lesson.title}”. Volvé a practicarla cuando quieras.</p>${next ? `<p class="completion-next">Próximo paso: <strong>${esc(next.title)}</strong></p>` : "<p>Completaste el recorrido. Elegí una pieza o volvé a un ejercicio para afianzarlo.</p>"}<div class="controls" style="justify-content:center"><button class="secondary" id="finish-close">Volver a mi espacio</button>${next ? `<button class="dark-button" id="next-lesson">Siguiente lección →</button>` : ""}</div></div>`;
       $("#finish-close").onclick = () => dialog.close();
       if (next)
         $("#next-lesson").onclick = () => {
@@ -1510,6 +1518,7 @@ function renderLesson() {
           quizPassed = false;
           lessonExercisePassed = false;
           renderLesson();
+          dialog.scrollTop = 0;
         };
     };
   }

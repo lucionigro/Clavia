@@ -15,6 +15,16 @@ exports.allowed = [
   "/instrument.js",
   "/advanced-curriculum.js",
   "/learning.js",
+  "/learning-path.js",
+  "/sound.js",
+  "/assets/piano/SOURCE-LICENSE.txt",
+  ...[
+    "A0",
+    ...Array.from({ length: 7 }, (_, i) =>
+      ["C", "Ds", "Fs", "A"].map((n) => `${n}${i + 1}`),
+    ).flat(),
+    "C8",
+  ].map((name) => `/assets/piano/${name}.mp3`),
   "/course-ui.js",
   "/improvisation.js",
   "/aural-lab.js",
@@ -30,6 +40,8 @@ exports.mime = {
   ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".musicxml": "application/vnd.recordare.musicxml+xml",
+  ".mp3": "audio/mpeg",
+  ".txt": "text/plain; charset=utf-8",
   ".woff2": "font/woff2",
 };
 exports.csp =

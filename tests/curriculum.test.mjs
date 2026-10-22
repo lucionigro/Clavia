@@ -156,3 +156,16 @@ test("El ritmo verifica fase, tempo, cantidad de ataques y umbral de aprobación
   assert.equal(scoreRhythm(ideal.slice(1), 4000, 1000).passed, false);
   assert.equal(scoreRhythm(ideal, 4000, 0).passed, false);
 });
+
+test("Las copias antiguas reciben piano de cola y las nuevas conservan el timbre", () => {
+  const old = validateState({ version: 1, completed: ["postura"] });
+  assert.equal(old.instrument.sound, "grand");
+  const current = defaultState();
+  current.instrument.sound = "electric";
+  assert.equal(
+    validateState(JSON.parse(JSON.stringify(current))).instrument.sound,
+    "electric",
+  );
+  current.instrument.sound = "<script>";
+  assert.equal(validateState(current).instrument.sound, "grand");
+});

@@ -2,6 +2,14 @@
 
 La auditoría inicial encontró una diferencia entre amplitud teórica y práctica verificable: varias lecciones nombraban independencia, síncopa, improvisación o blues, pero pedían secuencias de alturas uniformes. Esta versión reemplaza las preparaciones de dos manos, síncopa, blues y 3:2 por partituras reales y agrega 48 lecciones específicas, hasta 82 en total.
 
+## Un recorrido lineal
+
+Las 82 lecciones se presentan en 12 bloques: ubicación y primeras notas; melodía y dos manos; lectura y duraciones; escalas y oído; primera pieza; ampliación de escalas y acordes; ritmo y motivos; interpretación; acompañamiento propio; independencia y expresión; lenguaje armónico; proyecto final. El orden está definido en `learning-path.js` y es compartido por inicio, plan diario, curso y continuación.
+
+El primer bloque empieza por encontrar Do antes de colocar cinco dedos. Los bloques mantienen las cuatro etapas y no mezclan ejercicios avanzados con los primeros pasos. Las áreas son filtros opcionales de repaso; nunca reordenan el camino. No se bloquea la exploración de otras clases.
+
+Los IDs de las lecciones se conservan: las copias y el progreso anterior siguen siendo válidos. Si hay huecos por el orden anterior, «Continuar» propone el primer paso pendiente; no borra lo que ya completaste. Para principiantes el plan diario propone una sola lección; los intereses y la experiencia declarada no saltean fundamentos.
+
 ## Ocho áreas conectadas
 
 | Área | Qué desarrolla | Práctica y transferencia |

@@ -1571,3 +1571,303 @@ a.skip:focus {
 #setup-title:focus {
   outline: none;
 }
+
+/* Recorrido: una acción principal y bloques de dificultad creciente. */
+.path-continue {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 40px;
+  padding: 36px;
+  margin-bottom: 40px;
+  background: var(--studio-sage);
+  border-radius: 20px;
+  color: var(--studio-ink);
+}
+.path-continue h2 {
+  font-size: clamp(28px, 3vw, 40px);
+  margin: 14px 0;
+}
+.path-continue p {
+  max-width: 58ch;
+  line-height: 1.75;
+}
+.path-continue .primary {
+  margin-top: 12px;
+}
+.path-progress {
+  border-left: 1px solid #bfcbb7;
+  padding-left: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.path-progress > strong {
+  font-size: 48px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+}
+.path-progress strong small {
+  font-size: 20px;
+  font-weight: 450;
+}
+.path-progress > span,
+.path-progress p {
+  font-size: 12px;
+}
+.path-progress progress {
+  width: 100%;
+  height: 7px;
+  margin: 18px 0 4px;
+  accent-color: var(--green);
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.path-progress progress::-webkit-progress-bar {
+  background: #d0dac7;
+}
+.path-progress progress::-webkit-progress-value {
+  background: var(--green);
+}
+.path-explore {
+  margin: 18px 0;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+}
+.path-explore > summary {
+  cursor: pointer;
+  font-size: 13px;
+  padding: 12px 0;
+  color: var(--green);
+  font-weight: 650;
+}
+.path-explore .domain-grid {
+  margin: 15px 0 0;
+}
+.path-explore .domain-card {
+  padding: 16px;
+  min-height: 80px;
+}
+.path-explore .chip {
+  align-self: stretch;
+}
+.path-chapter {
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  overflow: hidden;
+}
+.path-chapter.is-current {
+  border-color: #91a486;
+}
+.path-chapter > summary {
+  padding: 24px;
+  gap: 20px;
+  min-height: 110px;
+}
+.path-chapter > summary > .domain-index {
+  margin: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: var(--studio-soft);
+  border-radius: 10px;
+  color: var(--green);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.path-chapter h2 {
+  font-size: 25px;
+  margin: 6px 0;
+}
+.path-chapter summary p {
+  font-size: 12px;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+.path-chapter .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.07em;
+}
+.path-chapter .course-domain-count {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.path-chapter .lesson-list {
+  margin: 0 24px 18px 82px;
+}
+.path-chapter .lesson-row {
+  padding: 18px 12px;
+  width: 100%;
+}
+.path-chapter .lesson-row.is-next {
+  background: var(--studio-sage);
+  border-radius: 8px;
+}
+.path-chapter .lesson-row strong {
+  font-size: 14px;
+}
+.path-chapter .lesson-row small {
+  font-size: 11px;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+.path-chapter .lesson-state {
+  font-size: 11px;
+  white-space: normal;
+}
+.path-chapter .is-next .lesson-state {
+  color: var(--green);
+  font-weight: 700;
+}
+.path-chapter .is-complete .lesson-number {
+  color: var(--green);
+}
+.path-note {
+  margin-top: 32px;
+}
+.path-note > p {
+  max-width: 75ch;
+  line-height: 1.8;
+}
+.lesson-context {
+  color: var(--green);
+  margin: 0 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.completion-next {
+  padding: 18px;
+  background: var(--studio-sage);
+  border-radius: 12px;
+}
+.course-filters input {
+  font-size: 14px;
+  min-height: 46px;
+}
+.course-filters .chip {
+  min-height: 40px;
+  font-size: 11px;
+}
+.lesson-steps {
+  gap: 8px;
+}
+.lesson-steps > span {
+  line-height: 1.5;
+}
+.nav-item {
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+button:focus-visible,
+summary:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid #668452;
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  .path-continue {
+    grid-template-columns: minmax(0, 1fr) 170px;
+    padding: 26px;
+    gap: 24px;
+  }
+  .path-progress {
+    padding-left: 22px;
+  }
+  .path-chapter > summary {
+    padding: 20px;
+    gap: 14px;
+  }
+  .path-chapter .lesson-list {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+}
+@media (max-width: 600px) {
+  .path-continue {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 24px;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .path-progress {
+    border-left: 0;
+    border-top: 1px solid #bfcbb7;
+    padding: 18px 0 0;
+  }
+  .path-progress > strong {
+    font-size: 32px;
+  }
+  .path-progress p {
+    margin-bottom: 0;
+  }
+  .path-chapter > summary {
+    padding: 16px 12px;
+    gap: 10px;
+  }
+  .path-chapter h2 {
+    font-size: 22px;
+  }
+  .path-chapter summary p {
+    display: block;
+    font-size: 12px;
+  }
+  .path-chapter .course-domain-count {
+    font-size: 11px;
+  }
+  .path-chapter .lesson-list {
+    margin: 0 8px 12px;
+  }
+  .path-chapter .lesson-row {
+    padding: 16px 8px;
+    gap: 8px;
+    grid-template-columns: 28px minmax(0, 1fr) 64px;
+  }
+  .path-chapter .row-arrow {
+    display: none;
+  }
+  .path-chapter .lesson-state {
+    display: block;
+    font-size: 10px;
+  }
+  .path-chapter .lesson-number {
+    width: 28px;
+  }
+  .path-explore .domain-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .path-continue .primary {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+.path-chapter .lesson-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+.path-chapter .lesson-row {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 110px 18px;
+  text-align: left;
+}
+.daily-plan-steps.single-step {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (max-width: 600px) {
+  .path-chapter .lesson-row {
+    grid-template-columns: 28px minmax(0, 1fr) 64px;
+  }
+}

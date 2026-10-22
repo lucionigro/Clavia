@@ -60,6 +60,17 @@ test("La app empaquetada abre sin servidor, admite MIDI y conserva progreso al r
     await expect(page.locator("#toast")).not.toContainText(
       "No se pudo conectar",
     );
+    await page.locator(".header-settings").click();
+    await page.locator("[data-sound-preset]").selectOption("soft");
+    await page.locator("[data-sound-preview]").click();
+    await page.waitForTimeout(300);
+    await expect(page.locator("#toast")).not.toContainText("No se pudo cargar");
+    await page.locator('[data-page="course"]').first().click();
+    await expect(page.locator(".path-chapter")).toHaveCount(12);
+    await expect(page.locator(".path-continue [data-lesson]")).toHaveAttribute(
+      "data-lesson",
+      "mapa",
+    );
     await page.locator('[data-page="library"]').first().click();
     await expect(page.locator(".repertoire-card")).toHaveCount(15);
     await page.locator('[data-favorite="primeras-luces"]').click();
@@ -92,6 +103,8 @@ test("La app empaquetada abre sin servidor, admite MIDI y conserva progreso al r
     await desktop.close();
     desktop = await launch();
     page = await desktop.firstWindow();
+    await page.locator(".header-settings").click();
+    await expect(page.locator("[data-sound-preset]")).toHaveValue("soft");
     await page.locator('[data-page="library"]').first().click();
     await page.locator('[data-library-kind="favorites"]').click();
     await expect(page.locator(".repertoire-card h2")).toHaveText(

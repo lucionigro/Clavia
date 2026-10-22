@@ -1,3 +1,4 @@
+import { soundOptions, validateSound } from "./sound.js";
 import { escapeHTML as esc } from "./repertoire.js";
 import { pitchName } from "./guided-score.js";
 export const keyCounts = [25, 32, 37, 49, 61, 73, 76, 88];
@@ -18,6 +19,7 @@ export const defaultInstrument = () => ({
   connection: "virtual",
   midiId: "",
   localSound: true,
+  sound: "grand",
   configured: false,
 });
 export const defaultProfile = () => ({
@@ -39,6 +41,7 @@ export function validateInstrument(value = {}) {
     connection: value.connection === "midi" ? "midi" : "virtual",
     midiId: typeof value.midiId === "string" ? value.midiId.slice(0, 200) : "",
     localSound: value.localSound !== false,
+    sound: validateSound(value.sound),
     configured: value.configured === true,
   };
 }
@@ -74,7 +77,7 @@ const optionsHTML = (selected) =>
     .join("");
 export function instrumentSettingsHTML(state) {
   const p = state.instrument;
-  return `<section class="panel instrument-settings"><div class="section-title"><div><span class="eyebrow">UN PERFIL PARA TU INSTRUMENTO</span><h2>Tu teclado, bien conectado.</h2></div><button class="secondary" data-open-setup>Revisar configuración →</button></div><p>${esc(p.model || "Mi teclado")} · ${p.keys} teclas · ${instrumentRange(p)}. Do4 es el Do central (MIDI 60).</p><div class="repertoire-filters"><label>Dispositivo MIDI<select id="midi-device"><option value="">Conectá tu teclado para verlo acá</option></select></label><label>Sonido al tocar en Clavia<select id="instrument-sound"><option value="yes" ${p.localSound ? "selected" : ""}>Activado</option><option value="no" ${!p.localSound ? "selected" : ""}>Solo mi instrumento físico</option></select></label></div><div class="midi-monitor"><span class="connection-dot"></span><span data-midi-status>Sin conexión MIDI activa</span><strong data-midi-note>Tocá una tecla para probar</strong></div><p class="hint">Si escuchás cada nota duplicada, elegí «Solo mi instrumento físico». La guía y los ejercicios de oído siguen teniendo sonido.</p></section>`;
+  return `<section class="panel instrument-settings"><div class="section-title"><div><span class="eyebrow">UN PERFIL PARA TU INSTRUMENTO</span><h2>Tu teclado, bien conectado.</h2></div><button class="secondary" data-open-setup>Revisar configuración →</button></div><p>${esc(p.model || "Mi teclado")} · ${p.keys} teclas · ${instrumentRange(p)}. Do4 es el Do central (MIDI 60).</p><div class="repertoire-filters"><label>Dispositivo MIDI<select id="midi-device"><option value="">Conectá tu teclado para verlo acá</option></select></label><label>Sonido al tocar en Clavia<select id="instrument-sound"><option value="yes" ${p.localSound ? "selected" : ""}>Activado</option><option value="no" ${!p.localSound ? "selected" : ""}>Solo mi instrumento físico</option></select></label><label>Sonido de Clavia<select data-sound-preset aria-label="Sonido de Clavia">${soundOptions(p.sound)}</select></label></div><button class="secondary" data-sound-preview>Probar sonido ♪</button><p class="hint">Piano de cola y piano suave usan muestras grabadas. Piano eléctrico y órgano son sonidos sintetizados. Tu elección también se usa en las guías y se guarda en este equipo.</p><div class="midi-monitor"><span class="connection-dot"></span><span data-midi-status>Sin conexión MIDI activa</span><strong data-midi-note>Tocá una tecla para probar</strong></div><p class="hint">Si escuchás cada nota duplicada, elegí «Solo mi instrumento físico». La guía y los ejercicios de oído siguen teniendo sonido.</p></section>`;
 }
 export function bindInstrumentSettings({
   state,
@@ -150,12 +153,16 @@ export function openSetup({ state, save, connect, getDevices, onDone }) {
               .join(
                 "",
               )}</select></label><label class="field">Tiempo que puedo dedicar<select id="setup-goal">${[10, 15, 20, 30, 45].map((n) => `<option value="${n}" ${n === goal ? "selected" : ""}>${n} minutos al día</option>`).join("")}</select></label>`
-          : `<span class="eyebrow">03 / CONECTÁ Y PROBÁ</span><h1 id="setup-title">Que Clavia te escuche.</h1><p>Con un teclado USB MIDI podemos comparar notas, ataques y cuánto sostenés cada tecla.</p><div class="setup-connection-options"><label><input type="radio" name="setup-connection" value="midi" ${draft.connection === "midi" ? "checked" : ""}><strong>Mi teclado por USB MIDI</strong><span>Conectá el puerto USB del instrumento a la computadora y encendelo.</span></label><label><input type="radio" name="setup-connection" value="virtual" ${draft.connection === "virtual" ? "checked" : ""}><strong>Primero voy a explorar la app</strong><span>Uso mouse, pantalla táctil o teclado de computadora.</span></label></div><button class="secondary" id="setup-connect">Buscar mi teclado MIDI ↗</button><div class="midi-monitor"><span class="connection-dot"></span><span data-midi-status>Esperando la conexión</span><strong data-midi-note>Tocá una nota para probar</strong></div><div class="controls"><button class="text-button" id="setup-calibrate">Detectar mi tecla más grave</button><span class="hint" id="setup-range">${draft.keys} teclas · ${instrumentRange(draft)}</span></div><label class="field">¿Dónde querés escuchar lo que tocás?<select id="setup-audio"><option value="app" ${draft.localSound ? "selected" : ""}>En Clavia · también para controladores sin sonido</option><option value="instrument" ${!draft.localSound ? "selected" : ""}>En mi instrumento · tiene sonido propio</option></select></label><p id="setup-status" class="hint" role="status">Si tu instrumento tiene sonido propio, la app puede silenciar su sonido de entrada para evitar duplicación. No hace falta micrófono.</p>`
+          : `<span class="eyebrow">03 / CONECTÁ Y PROBÁ</span><h1 id="setup-title">Que Clavia te escuche.</h1><p>Con un teclado USB MIDI podemos comparar notas, ataques y cuánto sostenés cada tecla.</p><div class="setup-connection-options"><label><input type="radio" name="setup-connection" value="midi" ${draft.connection === "midi" ? "checked" : ""}><strong>Mi teclado por USB MIDI</strong><span>Conectá el puerto USB del instrumento a la computadora y encendelo.</span></label><label><input type="radio" name="setup-connection" value="virtual" ${draft.connection === "virtual" ? "checked" : ""}><strong>Primero voy a explorar la app</strong><span>Uso mouse, pantalla táctil o teclado de computadora.</span></label></div><button class="secondary" id="setup-connect">Buscar mi teclado MIDI ↗</button><div class="midi-monitor"><span class="connection-dot"></span><span data-midi-status>Esperando la conexión</span><strong data-midi-note>Tocá una nota para probar</strong></div><div class="controls"><button class="text-button" id="setup-calibrate">Detectar mi tecla más grave</button><span class="hint" id="setup-range">${draft.keys} teclas · ${instrumentRange(draft)}</span></div><label class="field">¿Dónde querés escuchar lo que tocás?<select id="setup-audio"><option value="app" ${draft.localSound ? "selected" : ""}>En Clavia · también para controladores sin sonido</option><option value="instrument" ${!draft.localSound ? "selected" : ""}>En mi instrumento · tiene sonido propio</option></select></label><label class="field" id="setup-tone-field" ${draft.localSound ? "" : "hidden"}>Elegí tu sonido<select id="setup-tone">${soundOptions(draft.sound)}</select></label><button class="secondary" data-sound-preview>Probar sonido ♪</button><p id="setup-status" class="hint" role="status">Si tu instrumento tiene sonido propio, la app puede silenciar su sonido de entrada para evitar duplicación. No hace falta micrófono.</p>`
     }<div class="setup-actions">${step ? '<button class="text-button" data-setup-back>← Volver</button>' : '<button class="text-button" data-setup-later>Configurar después</button>'}<button class="dark-button" data-setup-next>${step === 2 ? "Entrar a Clavia →" : "Continuar →"}</button></div></section></div>`;
     d.querySelector("[data-setup-close]").onclick = () => d.close();
     d.querySelector("[data-setup-later]")?.addEventListener("click", () =>
       d.close(),
     );
+    if (step === 2)
+      d.querySelector("#setup-audio").onchange = (e) => {
+        d.querySelector("#setup-tone-field").hidden = e.target.value !== "app";
+      };
     const capture = () => {
       if (step === 0) {
         draft.keys = Number(d.querySelector("#setup-keys").value);
@@ -172,6 +179,7 @@ export function openSetup({ state, save, connect, getDevices, onDone }) {
           '[name="setup-connection"]:checked',
         ).value;
         draft.localSound = d.querySelector("#setup-audio").value === "app";
+        draft.sound = validateSound(d.querySelector("#setup-tone").value);
       }
     };
     if (step === 0)

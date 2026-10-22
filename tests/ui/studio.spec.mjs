@@ -25,6 +25,8 @@ test("Configuración personal, recorrido clásico, búsqueda y adaptación a tam
   await expect(page.locator(".daily-plan")).toContainText("20 MINUTOS");
   await page.locator('[data-page="course"]').first().click();
   await expect(page.locator(".course-total")).toContainText("82");
+  await expect(page.locator(".path-chapter")).toHaveCount(12);
+  await page.locator(".path-explore > summary").click();
   await expect(page.locator(".domain-card")).toHaveCount(8);
   await page.locator('[data-course-domain="classical"]').first().click();
   await page.locator("#course-search").fill("Alberti");
@@ -61,13 +63,11 @@ test("MusicXML y MXL crean partitura y guía de teclado; un PDF recibe instrucci
   await page.goto("/#library");
   await skip(page);
   await page.locator("[data-import-midi]").click();
-  await page
-    .locator("#midi-upload")
-    .setInputFiles({
-      name: "pagina.pdf",
-      mimeType: "application/pdf",
-      buffer: Buffer.from("%PDF-1.7"),
-    });
+  await page.locator("#midi-upload").setInputFiles({
+    name: "pagina.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.7"),
+  });
   await expect(page.locator("#midi-import-status")).toContainText(
     "reconocimiento óptico",
   );
@@ -95,13 +95,11 @@ test("MusicXML y MXL crean partitura y guía de teclado; un PDF recibe instrucci
     "META-INF/container.xml": strToU8(container),
     "score.musicxml": strToU8(xml),
   });
-  await page
-    .locator("#midi-upload")
-    .setInputFiles({
-      name: "estudio.mxl",
-      mimeType: "application/vnd.recordare.musicxml",
-      buffer: Buffer.from(zip),
-    });
+  await page.locator("#midi-upload").setInputFiles({
+    name: "estudio.mxl",
+    mimeType: "application/vnd.recordare.musicxml",
+    buffer: Buffer.from(zip),
+  });
   await expect(page.locator("#save-midi")).toBeVisible();
   await page.locator("#midi-title").fill("Mi partitura comprimida");
   await page.locator("#save-midi").click();

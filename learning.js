@@ -1,3 +1,4 @@
+import { nextPathLesson } from "./learning-path.js";
 import { studyDomains } from "./advanced-curriculum.js";
 export { studyDomains };
 const legacyDomains = {
@@ -118,51 +119,49 @@ export function evidenceStatus(state, id) {
   return { label: "Por descubrir", kind: "new" };
 }
 export function buildDailyPlan(state, lessons, now = Date.now()) {
-  const focus = state.profile?.focus || "general",
-    preferred =
-      {
-        classical: ["baroque", "classical"],
-        improvisation: ["improvisation", "harmony"],
-        rock: ["harmony", "improvisation"],
-      }[focus] || [];
+  const focus = state.profile?.focus || "general";
   const due = lessons
-    .filter((l) => state.reviews[l.id]?.due <= now)
+    .filter(
+      (l) => state.completed.includes(l.id) && state.reviews[l.id]?.due <= now,
+    )
     .sort((a, b) => state.reviews[a.id].due - state.reviews[b.id].due)[0];
-  const pool = lessons.filter((l) => !state.completed.includes(l.id));
-  const minimum = pool.length ? Math.min(...pool.map((l) => l.level)) : 0;
-  const workingLevel =
-    state.profile?.experience === "advanced" && pool.some((l) => l.level === 2)
-      ? 2
-      : minimum;
-  const viable = pool.filter((l) => l.level === workingLevel);
-  const next =
-    state.completed.length < 4 && workingLevel === 0
-      ? viable[0]
-      : viable.find((l) => preferred.includes(lessonDomain(l))) || viable[0];
+  const next = nextPathLesson(state, lessons);
+  const beginner = next?.level === 0;
   const total = state.goal || 15,
     technical = Math.max(2, Math.round(total * 0.2)),
     study = Math.max(4, Math.round(total * 0.4)),
     music = Math.max(2, Math.round(total * 0.25)),
     creative = Math.max(1, total - technical - study - music);
+  if (beginner)
+    return [
+      {
+        id: "learn",
+        title: "Seguí el recorrido, paso a paso",
+        detail: next.title,
+        minutes: total,
+        lesson: next.id,
+      },
+    ];
   return [
     {
       id: "warmup",
-      title: due ? "Volvé a una idea que ya tocaste" : "Prepará manos y oído",
-      detail: due?.title || "Escala lenta y dos minutos de atención al sonido",
+      title: due
+        ? "Volvé a una idea que ya tocaste"
+        : "Prepará tu próxima lección",
+      detail: due?.title || next?.title || "Volvé a una lección conocida",
       minutes: technical,
-      lesson: due?.id,
-      tool: due ? undefined : "scales",
+      lesson: due?.id || next?.id,
     },
     {
       id: "learn",
-      title: "Una idea para llevar al teclado",
+      title: "Seguí el recorrido, paso a paso",
       detail: next?.title || "Volvé a tu ejercicio menos estable",
       minutes: study,
       lesson: next?.id,
     },
     {
       id: "music",
-      title: "Hacé música con las dos manos",
+      title: "Llevá la idea a una pieza",
       detail:
         focus === "classical"
           ? "Leé una pieza y buscá su frase principal"

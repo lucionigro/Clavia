@@ -1,3 +1,4 @@
+import { courseChapters } from "./learning-path.js";
 import { advancedLessons } from "./advanced-curriculum.js";
 import { pieces } from "./repertoire.js";
 // Contenido original en español. MIDI 60 = Do4 central.
@@ -1093,5 +1094,6 @@ replacePractice("polirritmia", {
 });
 lessons.find((l) => l.id === "fa").practice.clef = "bass";
 lessons.push(...advancedLessons);
-lessons.sort((a, b) => a.level - b.level);
+const pathOrder = courseChapters.flatMap((chapter) => chapter.ids);
+lessons.sort((a, b) => pathOrder.indexOf(a.id) - pathOrder.indexOf(b.id));
 export { pieces };

@@ -21,16 +21,16 @@ Aprendé teclado con partituras, guías de teclas, práctica MIDI y un camino mu
 
 | Tu equipo | Archivo en Releases |
 | --- | --- |
-| Mac Apple Silicon, M1 o posterior | `Clavia-1.2.2-mac-arm64.dmg` |
-| Mac Intel | `Clavia-1.2.2-mac-x64.dmg` |
-| Windows de 64 bits | `Clavia-1.2.2-windows-x64.exe` |
-| Linux de 64 bits | `Clavia-1.2.2-linux-x86_64.AppImage` o `Clavia-1.2.2-linux-amd64.deb` |
+| Mac Apple Silicon, M1 o posterior | `Clavia-1.3.0-mac-arm64.dmg` |
+| Mac Intel | `Clavia-1.3.0-mac-x64.dmg` |
+| Windows de 64 bits | `Clavia-1.3.0-windows-x64.exe` |
+| Linux de 64 bits | `Clavia-1.3.0-linux-x86_64.AppImage` o `Clavia-1.3.0-linux-amd64.deb` |
 
 **Versión comunitaria sin firma comercial.** Los paquetes no están firmados ni notarizados con Apple/Microsoft; el sistema puede advertir o bloquear su apertura. Consultá [instalación y compatibilidad](docs/INSTALL.md). La prueba con teclados físicos depende del modelo y del sistema: no se afirma compatibilidad probada con cada instrumento. Las compilaciones de otros sistemas deben distinguirse de una prueba física de ejecución y MIDI.
 
 ## Un recorrido para entender y hacer música
 
-**82 lecciones originales**, cuatro etapas y ocho áreas que se complementan:
+**82 lecciones originales en 12 bloques numerados**, de principiante a avanzado. Inicio, plan diario y «Siguiente lección» comparten un único orden. Las ocho áreas se pueden filtrar para repasar:
 
 - Técnica y control: escalas, arpegios, cambios de posición e independencia.
 - Lectura y ritmo: claves, armaduras, silencios, puntillos, ligaduras y síncopas.
@@ -41,7 +41,7 @@ Aprendé teclado con partituras, guías de teclas, práctica MIDI y un camino mu
 - Armonía y arreglos: cifrado, funciones, inversiones y conducción de voces.
 - Interpretación y autonomía: preparar una obra, estudiar enlaces y escuchar las propias decisiones.
 
-Cada lección reúne explicación, un ejemplo para tocar, una pregunta y un reto en el instrumento. El plan del día combina técnica, estudio, repertorio y creación según tu tiempo y foco.
+Cada lección reúne explicación, un ejemplo para tocar, una pregunta y un reto en el instrumento. Al empezar, el plan del día propone un solo siguiente paso, sin adelantar escalas o improvisación. Más adelante incorpora repaso, repertorio y creación.
 
 **Completar una pantalla y dominar un instrumento son cosas distintas.** Clavia registra práctica y evidencia de ejercicios; no certifica un nivel de conservatorio. Para afianzar un ejercicio MIDI propone tres tomas con pulso, sin nombres de notas, en dos días: ≥95% de alturas y ≥90% de ataques/duraciones. Son criterios propios del producto. Postura, digitación física, tensión, calidad acústica, musicalidad y expresión requieren observarte, escucharte y recibir devolución cuando sea posible. [Método y límites](docs/LEARNING.md).
 
@@ -61,6 +61,7 @@ La notación de práctica es una representación simplificada: conservá tu edic
 
 ## Un espacio para practicar y crear
 
+- **Sonidos a elección:** piano de cola con muestras grabadas, piano suave, piano eléctrico y órgano. Elegilos y probalos en el primer inicio, Ajustes o teclado libre; la preferencia se guarda localmente.
 - **Práctica visual:** clave de Sol y Fa, cascada de notas, teclado, duraciones independientes y modo atril.
 - **A mi ritmo:** espera tus notas y verifica cuánto las sostenés.
 - **Con pulso:** compara alturas, ataques y liberaciones con ventanas adaptadas a la subdivisión.
